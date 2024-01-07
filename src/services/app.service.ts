@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import { User } from "../entities/usersshema";
 import { Contact } from "../entities/contactshema";
 import { InjectModel } from "@nestjs/mongoose";
+import { NotifService } from "./notif.service";
 
 @Injectable()
 export class AppService {
@@ -11,7 +12,8 @@ export class AppService {
     @InjectModel(User.name)
     private UserModel: mongoose.Model<User>,
     @InjectModel(Contact.name)
-    private ContactModel: mongoose.Model<Contact>
+    private ContactModel: mongoose.Model<Contact>,
+    private readonly notifService: NotifService
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -27,10 +29,10 @@ export class AppService {
   }
 
 
-  async listUserContacts(user): Promise<Contact[]> {
+  async listUserContacts(userid): Promise<Contact[]> {
     try {
 
-      const result = await this.UserModel.findOne({email:user.email})
+      const result = await this.UserModel.findOne({_id:userid})
       if (!result) {
        // throw new NotFoundException('user not found.');
       }
@@ -44,10 +46,11 @@ export class AppService {
     }
   }
 
-  async addcontact(email,contact:Contact) {
+  async addcontact(id,email,contact:Contact) {
     try {
 
-      const user = await this.UserModel.findOne({email:email})
+      const user = await this.UserModel.findOne({email:email,_id:id})
+
       if (!user) {
         // throw new NotFoundException('user not found.');
       }
@@ -56,6 +59,11 @@ export class AppService {
       const newcontact = await this.ContactModel.create(contact)
       userfind.contacts.push(newcontact);
 
+      const details={
+        contactnamecontact:contact.name,
+        eventtype:"Added"
+      }
+      this.notifService.notif(userfind,details)
       return await this.UserModel.findOneAndUpdate(userfind);
     } catch (error) {
 
@@ -64,9 +72,9 @@ export class AppService {
     }
   }
 
-  async removecontact(email,contactemail) {
+  async removecontact(id,email,contactemail) {
     try {
-      const user = await this.UserModel.findOne({email:email})
+      const user = await this.UserModel.findOne({email:email,_id:id})
       if (!user) {
         // throw new NotFoundException('user not found.');
       }
@@ -84,7 +92,11 @@ export class AppService {
 
       await this.ContactModel.deleteOne({email:contactemail})
 
-
+      const details={
+        contactnamecontact:contact.name,
+        eventtype:"removed"
+      }
+      this.notifService.notif(userfind,details)
       return await this.UserModel.findOneAndUpdate(userfind);
     } catch (error) {
 

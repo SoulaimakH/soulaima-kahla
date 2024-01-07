@@ -1,0 +1,18 @@
+version: '3'
+services:
+  phonebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+
+      # start the mongodb service as container
+  database:
+      image: mongo
+      container_name: mongodatabase
+      restart: always
+      ports:
+        - '27017:2717'

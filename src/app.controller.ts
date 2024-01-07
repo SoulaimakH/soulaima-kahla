@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Post } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Post } from "@nestjs/common";
 import { AppService } from './services/app.service';
 import { User } from "./entities/usersshema";
 import { Contact } from "./entities/contactshema";
@@ -12,17 +12,19 @@ export class AppController {
     return this.appService.findAll();
   }
 
-  @Post("contacts")
-  listcontact(@Body() user): Promise<Contact[]> {
-    return this.appService.listUserContacts(user);
-  }
-  @Post("addcontact")
-  addcontact(@Body() body) {
-    return this.appService.addcontact(body.email,body.contact);
+  @Get("contacts/:id")
+  listcontact(@Param('id') id: number): Promise<Contact[]> {
+    return this.appService.listUserContacts(id);
   }
 
-  @Delete("removecontact")
-  removecontact(@Body() body) {
-    return this.appService.removecontact(body.email,body.contact);
+
+  @Post("addcontact/:id")
+  addcontact(@Param('id') id: number,@Body() body) {
+    return this.appService.addcontact(id,body.email,body.contact);
+  }
+
+  @Delete("removecontact/:id")
+  removecontact(@Param('id') id: number,@Body() body) {
+    return this.appService.removecontact(id,body.email,body.contact);
   }
 }

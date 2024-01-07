@@ -7,7 +7,7 @@ export class Contact {
   @Prop({ unique: true, required: true })// l'unicité des données
   name: string;
 
-  @Prop()
+  @Prop({ unique: true, required: true })
   email:string;
 
   @Prop({required: true })

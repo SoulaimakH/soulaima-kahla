@@ -6,6 +6,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { MongooseConfigService } from "./config/mongooseconfig";
 import { UserSchema } from "./entities/usersshema";
 import { ContactSchema } from "./entities/contactshema";
+import { NotifService } from "./services/notif.service";
 
 
 let envFilePath = 'env.dev';
@@ -24,6 +25,6 @@ console.log(`phone book Running`);
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService,NotifService],
 })
 export class AppModule {}

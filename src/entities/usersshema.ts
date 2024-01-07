@@ -17,6 +17,8 @@ export class User {
   @Prop()
   contacts:Contact[];
 
+  @Prop()
+  notifications:String;
   /*@Prop({ required: true })
   listHauteur: number[];
 
